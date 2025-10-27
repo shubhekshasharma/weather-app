@@ -58,7 +58,7 @@ export function CurrentWeatherDetail({
           </div>
           <div className="bg-zinc-50 dark:bg-zinc-800 rounded-xl p-4">
             <p className="text-sm text-zinc-500 dark:text-zinc-500">Location</p>
-            <p className="text-xs font-semibold text-zinc-900 dark:text-white mt-1">
+            <p className="text-xl font-semibold text-zinc-900 dark:text-white mt-1">
               {latitude.toFixed(2)}°N, {longitude.toFixed(2)}°E
             </p>
           </div>
