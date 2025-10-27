@@ -32,7 +32,10 @@ src/
 │   ├── page.tsx                    # Home page
 │   └── weather/[location]/
 │       └── page.tsx                # Detailed weather page
+│   └── all-city-weather/
+│       └── page.tsx                # Detailed weather data for all cities
 ├── components/
+│   ├── CurrentWeatherCard.tsx      # New component for displaying current weather
 │   ├── LocationSearch.tsx          # City dropdown selector
 │   ├── WeatherCard.tsx             # Current weather card
 │   ├── WeatherDisplay.tsx          # Weather display with navigation
