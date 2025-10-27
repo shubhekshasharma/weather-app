@@ -56,6 +56,10 @@ src/
 - Durham, NC
 - New York, NY
 - Tokyo, Japan
+- Kathmandu, Nepal
+- Sydney, Austrailia
+- Cairo, Egypt
+- Seoup, Korea
 
 ## Key Concepts
 
