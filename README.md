@@ -59,7 +59,7 @@ src/
 - Kathmandu, Nepal
 - Sydney, Austrailia
 - Cairo, Egypt
-- Seoup, Korea
+- Seoul, Korea
 
 ## Key Concepts
 
