@@ -12,13 +12,20 @@ interface WeatherDisplayProps {
 
 export function WeatherDisplay({ weather }: WeatherDisplayProps) {
   return (
-    <div className="flex flex-col items-center space-y-6">
-      <WeatherCard city={weather.city} weather={weather.current} />
+    <div>
+      <div className="flex flex-col items-center space-y-6">
+        <WeatherCard city={weather.city} weather={weather.current} />
 
-      {/* Link to detailed weather */}
-      <Button href={`/weather/${weather.city.toLowerCase()}`} variant="default">
-        View Detailed Forecast
-      </Button>
+        {/* Link to detailed weather */}
+        <Button href={`/weather/${weather.city.toLowerCase()}`} variant="default">
+          View Detailed Forecast
+        </Button>
+      </div>
+      <div className="flex flex-col items-center space-y-6" style={{ marginTop: '20px' }}>
+        <Button href={"/all-city-weather"} variant="ghost">
+            View All City Weather
+        </Button>
+      </div>
     </div>
   );
 }
