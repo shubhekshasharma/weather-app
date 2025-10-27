@@ -20,6 +20,26 @@ export const CITIES: City[] = [
     latitude: 35.6762,
     longitude: 139.6503,
   },
+  {
+    name: "Kathmandu",
+    latitude: 27.7103,
+    longitude: 85.3222,
+  },
+  {
+    name: "Sydney",
+    latitude: -33.8727,
+    longitude: 151.2057,
+  },
+  {
+    name: "Cairo",
+    latitude: 30.0444,
+    longitude: 31.2357,
+  },
+  {
+    name: "Seoul",
+    latitude: 37.5503,
+    longitude: 126.9971,
+  }
 ];
 
 export function getCityByName(name: string): City | undefined {
