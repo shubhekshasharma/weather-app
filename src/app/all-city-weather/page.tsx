@@ -1,9 +1,14 @@
-import { notFound } from "next/navigation";
-import { getWeatherData } from "@/lib/getWeather";
+"use client";
+
 import { CITIES } from "@/data/cities";
 import { CurrentWeatherDetail } from "@/components/CurrentWeatherDetail";
 import { ForecastCard } from "@/components/ForecastCard";
 import { Button } from "@/components/ui/Button";
+import { getCityByName } from "@/data/cities";
+import { getOpenMeteoUrl, fetchOpenMeteoWeatherData } from "@/api/open-meteo";
+import { transformOpenMeteoWeatherData } from "@/types/weather";
+import { useEffect, useState } from "react";
+import { WeatherData } from "@/types/weather";
 
 /**
  * All Cities Weather Page
@@ -11,12 +16,49 @@ import { Button } from "@/components/ui/Button";
  * Displays current weather and forecast for all predefined cities
  */
 
-export default async function AllCityWeatherPage() {
+export default function AllCityWeatherPage() {
   // Fetch weather data for all cities
-  const weatherData = CITIES.map((city) =>
-    getWeatherData(city.name)
-  );
-//   const allWeatherData = await Promise.all(weatherDataPromises);
+  const [weatherData, setWeathers] = useState<WeatherData[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+      loadCitiesWeather();
+    }, []);
+
+    const loadCitiesWeather = async () => {
+        setLoading(true);
+        setError("");
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+        let weathers: WeatherData[] = [];
+        for (const city of CITIES) {
+            const cityName = city.name;
+            const currentCity = getCityByName(cityName);
+            const lat = currentCity?.latitude;
+            const long = currentCity?.longitude;
+            const url = getOpenMeteoUrl(lat!, long!);
+            console.log(`Open-Meteo URL: ${url}`);
+            const openMeteoWeatherData = await fetchOpenMeteoWeatherData(lat!, long!);
+            console.log("openMeteoWeatherData Promise:", openMeteoWeatherData);
+            const transformedData = transformOpenMeteoWeatherData(
+            openMeteoWeatherData,
+            cityName,
+            lat!,
+            long!
+            );
+            console.log("Transformed Weather Data:", transformedData);
+            weathers.push(transformedData);
+          }
+
+        const data = weathers;
+        if (data) {
+        setWeathers(data);
+        } else {
+        setError(`Failed to load all weather data`);
+        }
+
+        setLoading(false);
+    };
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 px-4 py-12">
@@ -29,7 +71,11 @@ export default async function AllCityWeatherPage() {
             ← Back to Home
           </Button>
         </div>
-          {weatherData.map((weather) =>
+        <div>  
+          {loading && <p>Loading weather data for all cities...</p>}
+          {error && <p className="text-red-500">Error: {error}</p>} 
+        </div>
+          {weatherData && weatherData.map((weather) =>
             weather ? (
               <div key={weather.city} className="bg-white dark:bg-zinc-800 rounded-lg shadow p-6">
                 <h2 className="text-3xl font-bold text-zinc-900 dark:text-white text-center mb-6">

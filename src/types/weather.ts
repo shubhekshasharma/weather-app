@@ -67,3 +67,81 @@ export const WEATHER_CODES: Record<number, string> = {
 export function getWeatherDescription(code: number): string {
   return WEATHER_CODES[code] || "Unknown";
 }
+// {
+//   "latitude": 35.981766,
+//   "longitude": -78.8941,
+//   "generationtime_ms": 0.444173812866211,
+//   "utc_offset_seconds": 0,
+//   "timezone": "GMT",
+//   "timezone_abbreviation": "GMT",
+//   "elevation": 124,
+//   "current_units": {
+//     "time": "iso8601",
+//     "interval": "seconds",
+//     "temperature_2m": "°F",
+//     "relative_humidity_2m": "%",
+//     "apparent_temperature": "°F",
+//     "wind_speed_10m": "km/h",
+//     "weather_code": "wmo code"
+//   },
+//   "current": {
+//     "time": "2025-11-10T03:30",
+//     "interval": 900,
+//     "temperature_2m": 60.4,
+//     "relative_humidity_2m": 70,
+//     "apparent_temperature": 58.5,
+//     "wind_speed_10m": 8.2,
+//     "weather_code": 3
+//   },
+//   "daily_units": {
+//     "time": "iso8601",
+//     "weather_code": "wmo code",
+//     "temperature_2m_max": "°F",
+//     "temperature_2m_min": "°F"
+//   },
+//   "daily": {
+//     "time": [
+//       "2025-11-10",
+//       "2025-11-11",
+//       "2025-11-12"
+//     ],
+//     "weather_code": [3, 73, 3],
+//     "temperature_2m_max": [68.3, 46.1, 63],
+//     "temperature_2m_min": [39.6, 26, 38.2]
+//   }
+// }
+export function transformOpenMeteoWeatherData(
+  data: any, 
+  city: string, 
+  latitude: number, 
+  longitude: number
+): WeatherData {
+  const current: CurrentWeather = {
+    temperature: data.current.temperature_2m,
+    feelsLike: data.current.apparent_temperature,
+    humidity: data.current.relative_humidity_2m,
+    windSpeed: data.current.wind_speed_10m,
+    condition: {
+      code: data.current.weather_code,
+      description: getWeatherDescription(data.current.weather_code),
+    },
+  };
+
+  const forecast: DailyForecast[] = data.daily.time.map((date: string, index: number) => ({
+    date,
+    maxTemp: data.daily.temperature_2m_max[index],
+    minTemp: data.daily.temperature_2m_min[index],
+    condition: {
+      code: data.daily.weather_code[index],
+      description: getWeatherDescription(data.daily.weather_code[index]),
+    },
+  }));
+
+  return {
+    city,
+    latitude,
+    longitude,
+    current,
+    forecast,
+  };
+}

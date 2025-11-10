@@ -8,6 +8,9 @@ import { WeatherDisplay } from "@/components/WeatherDisplay";
 import { PageHeader } from "@/components/PageHeader";
 import { getWeatherData } from "@/lib/getWeather";
 import { WeatherData } from "@/types/weather";
+import { getCityByName } from "@/data/cities";
+import { getOpenMeteoUrl, fetchOpenMeteoWeatherData } from "@/api/open-meteo";
+import { transformOpenMeteoWeatherData } from "@/types/weather";
 
 // Default city to display on load
 const DEFAULT_CITY = "Durham";
@@ -22,12 +25,26 @@ export default function Home() {
     loadCityWeather(DEFAULT_CITY);
   }, []);
 
-  const loadCityWeather = (cityName: string) => {
+  const loadCityWeather = async (cityName: string) => {
     setLoading(true);
     setError("");
+    const currentCity = getCityByName(cityName);
+    const lat = currentCity?.latitude;
+    const long = currentCity?.longitude;
+    const url = getOpenMeteoUrl(lat!, long!);
+    console.log(`Open-Meteo URL: ${url}`);
+    const openMeteoWeatherData = await fetchOpenMeteoWeatherData(lat!, long!);
+    console.log("openMeteoWeatherData Promise:", openMeteoWeatherData);
+    const transformedData = transformOpenMeteoWeatherData(
+      openMeteoWeatherData,
+      cityName,
+      lat!,
+      long!
+    );
+    console.log("Transformed Weather Data:", transformedData);
 
-    const data = getWeatherData(cityName);
-
+    // const data = getWeatherData(cityName);
+    const data = transformedData;
     if (data) {
       setWeather(data);
     } else {
@@ -36,7 +53,6 @@ export default function Home() {
 
     setLoading(false);
   };
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950 px-4 py-12">
       <main className="w-full max-w-2xl space-y-8">
