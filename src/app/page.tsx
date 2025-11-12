@@ -6,11 +6,9 @@ import { LoadingState } from "@/components/LoadingState";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { WeatherDisplay } from "@/components/WeatherDisplay";
 import { PageHeader } from "@/components/PageHeader";
-import { getWeatherData } from "@/lib/getWeather";
 import { WeatherData } from "@/types/weather";
-import { getCityByName } from "@/data/cities";
-import { getOpenMeteoUrl, fetchOpenMeteoWeatherData } from "@/api/open-meteo";
-import { transformOpenMeteoWeatherData } from "@/types/weather";
+import { getWeatherData } from "@/lib/getWeather";
+import { NotFoundMessage } from "@/components/NotFoundMessage";
 
 // Default city to display on load
 const DEFAULT_CITY = "Durham";
@@ -19,6 +17,7 @@ export default function Home() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [notFound, setNotFound] = useState("");
 
   useEffect(() => {
     // Load default city weather on mount
@@ -27,24 +26,26 @@ export default function Home() {
 
   const loadCityWeather = async (cityName: string) => {
     setLoading(true);
-    setError("");
-    const currentCity = getCityByName(cityName);
-    const lat = currentCity?.latitude;
-    const long = currentCity?.longitude;
-    const url = getOpenMeteoUrl(lat!, long!);
-    console.log(`Open-Meteo URL: ${url}`);
-    const openMeteoWeatherData = await fetchOpenMeteoWeatherData(lat!, long!);
-    console.log("openMeteoWeatherData Promise:", openMeteoWeatherData);
-    const transformedData = transformOpenMeteoWeatherData(
-      openMeteoWeatherData,
-      cityName,
-      lat!,
-      long!
-    );
-    console.log("Transformed Weather Data:", transformedData);
 
-    // const data = getWeatherData(cityName);
-    const data = transformedData;
+    if (cityName.trim() === "Unknown City") {
+      setError(`We don't know the weather for ${cityName} because it is unknown!`);
+      setLoading(false);
+      setWeather(null);
+      setNotFound("");
+      return;
+    }
+    if (cityName.trim() === "Lost City") {
+      setNotFound(`${cityName} not found! Please try another search.`);
+      setLoading(false);
+      setWeather(null);
+      setError("");
+      return;
+    }
+    setError("");
+    setNotFound("");
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const data = await getWeatherData(cityName);
     if (data) {
       setWeather(data);
     } else {
@@ -70,6 +71,7 @@ export default function Home() {
         {/* Weather display */}
         {loading && <LoadingState />}
         {error && <ErrorMessage message={error} />}
+        {notFound && <NotFoundMessage message={notFound} />}
         {weather && !loading && <WeatherDisplay weather={weather} />}
       </main>
     </div>

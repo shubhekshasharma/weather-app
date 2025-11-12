@@ -39,6 +39,16 @@ export const CITIES: City[] = [
     name: "Seoul",
     latitude: 37.5503,
     longitude: 126.9971,
+  },
+  {
+  name: "Unknown City",
+  latitude: 0,
+  longitude: 0,
+  },
+  {
+  name: "Lost City",
+  latitude: 0,
+  longitude: 0,
   }
 ];
 

@@ -110,6 +110,20 @@ export function getWeatherDescription(code: number): string {
 //     "temperature_2m_min": [39.6, 26, 38.2]
 //   }
 // }
+
+function toTitleCase(str: string): string {
+  if (!str) {
+    return "";
+  }
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map(function (word) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(' ');
+}
+
 export function transformOpenMeteoWeatherData(
   data: any, 
   city: string, 
@@ -138,7 +152,7 @@ export function transformOpenMeteoWeatherData(
   }));
 
   return {
-    city,
+    city: toTitleCase(city),
     latitude,
     longitude,
     current,

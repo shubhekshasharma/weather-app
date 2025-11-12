@@ -4,11 +4,10 @@ import { CITIES } from "@/data/cities";
 import { CurrentWeatherDetail } from "@/components/CurrentWeatherDetail";
 import { ForecastCard } from "@/components/ForecastCard";
 import { Button } from "@/components/ui/Button";
-import { getCityByName } from "@/data/cities";
-import { getOpenMeteoUrl, fetchOpenMeteoWeatherData } from "@/api/open-meteo";
-import { transformOpenMeteoWeatherData } from "@/types/weather";
 import { useEffect, useState } from "react";
 import { WeatherData } from "@/types/weather";
+import { getWeatherData } from "@/lib/getWeather";
+import { LoadingState } from "@/components/LoadingState";
 
 /**
  * All Cities Weather Page
@@ -29,23 +28,11 @@ export default function AllCityWeatherPage() {
     const loadCitiesWeather = async () => {
         setLoading(true);
         setError("");
-        await new Promise((resolve) => setTimeout(resolve, 10000));
+        await new Promise((resolve) => setTimeout(resolve, 500));
         let weathers: WeatherData[] = [];
         for (const city of CITIES) {
             const cityName = city.name;
-            const currentCity = getCityByName(cityName);
-            const lat = currentCity?.latitude;
-            const long = currentCity?.longitude;
-            const url = getOpenMeteoUrl(lat!, long!);
-            console.log(`Open-Meteo URL: ${url}`);
-            const openMeteoWeatherData = await fetchOpenMeteoWeatherData(lat!, long!);
-            console.log("openMeteoWeatherData Promise:", openMeteoWeatherData);
-            const transformedData = transformOpenMeteoWeatherData(
-            openMeteoWeatherData,
-            cityName,
-            lat!,
-            long!
-            );
+            const transformedData = await getWeatherData(cityName);
             console.log("Transformed Weather Data:", transformedData);
             weathers.push(transformedData);
           }
@@ -72,7 +59,7 @@ export default function AllCityWeatherPage() {
           </Button>
         </div>
         <div>  
-          {loading && <p>Loading weather data for all cities...</p>}
+           {loading && <LoadingState />}
           {error && <p className="text-red-500">Error: {error}</p>} 
         </div>
           {weatherData && weatherData.map((weather) =>

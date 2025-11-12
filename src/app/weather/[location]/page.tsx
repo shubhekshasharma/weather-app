@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import { getWeatherData } from "@/lib/getWeather";
 import { CITIES } from "@/data/cities";
 import { CurrentWeatherDetail } from "@/components/CurrentWeatherDetail";
 import { ForecastCard } from "@/components/ForecastCard";
 import { Button } from "@/components/ui/Button";
+import { getWeatherData } from "@/lib/getWeather";
 
 /**
  * Detailed Weather Page
@@ -19,6 +19,7 @@ interface PageProps {
 }
 
 export default async function WeatherDetailPage({ params }: PageProps) {
+  
   const { location } = await params;
   const cityName = decodeURIComponent(location);
 
@@ -32,7 +33,7 @@ export default async function WeatherDetailPage({ params }: PageProps) {
   }
 
   // Fetch weather data
-  const weather = getWeatherData(cityName);
+  const weather = await getWeatherData(cityName);
 
   if (!weather) {
     return (
